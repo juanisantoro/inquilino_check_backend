@@ -12,7 +12,7 @@ router.get("/inmobiliarias", async (req, res) => {
     }
 
     const result = await pool.query(`
-        SELECT id, nombre, email, telefono
+        SELECT id, nombre, email, telefono, activo
         FROM inmobiliarias
         ORDER BY id DESC
     `);
