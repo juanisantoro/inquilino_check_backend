@@ -8,6 +8,8 @@ import authRoutes from "./routes/auth.js";
 import inquilinosRoutes from "./routes/inquilinos.js";
 import evaluacionesRoutes from "./routes/evaluaciones.js";
 import adminRoutes from "./routes/admin.js";
+import usuariosRoutes from "./routes/usuarios.js"; // ajustá el path
+
 const app = express();
 
 
@@ -27,6 +29,8 @@ app.use("/auth", authRoutes);
 app.use("/inquilinos", inquilinosRoutes);
 app.use("/evaluaciones", evaluacionesRoutes);
 app.use("/admin", adminRoutes);
+// Montás el router de usuarios
+app.use("/usuarios", usuariosRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`✅ Backend corriendo en puerto ${port}`));
