@@ -22,3 +22,11 @@ app.use("/evaluaciones", evaluacionesRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`✅ Backend corriendo en puerto ${port}`));
+
+import cors from "cors";
+
+app.use(cors({
+    origin: "*", // o la URL de tu frontend
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    credentials: true
+}));
