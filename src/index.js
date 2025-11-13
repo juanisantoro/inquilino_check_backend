@@ -10,6 +10,7 @@ import evaluacionesRoutes from "./routes/evaluaciones.js";
 
 const app = express();
 
+
 const allowed = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : ["http://localhost:3000"];
 app.use(cors({ origin: allowed, credentials: true }));
 app.use(express.json());
@@ -25,8 +26,3 @@ app.listen(port, () => console.log(`✅ Backend corriendo en puerto ${port}`));
 
 import cors from "cors";
 
-app.use(cors({
-    origin: "*", // o la URL de tu frontend
-    methods: "GET,POST,PUT,DELETE,OPTIONS",
-    credentials: true
-}));
