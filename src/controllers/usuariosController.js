@@ -88,30 +88,6 @@ export const crearUsuario = async (req, res) => {
     }
 };
 
-export const editarUsuario = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { nombre, rol, id_inmobiliaria, activo } = req.body;
-
-        const { rows } = await pool.query(
-            `
-      UPDATE usuarios
-      SET nombre = $1,
-          rol = $2,
-          id_inmobiliaria = $3,
-          activo = $4
-      WHERE id = $5
-      RETURNING id, nombre, email, rol, id_inmobiliaria, activo
-      `,
-            [nombre, rol, id_inmobiliaria, activo, id]
-        );
-
-        res.json({ msg: "Usuario actualizado", usuario: rows[0] });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Error actualizando usuario" });
-    }
-};
 
 export const cambiarPassword = async (req, res) => {
     try {
@@ -163,5 +139,92 @@ export const asignarInmobiliariaAUsuario = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error asignando inmobiliaria" });
+    }
+};
+
+
+export const editarUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, email, rol, id_inmobiliaria } = req.body;
+
+        if (!nombre || !email || !rol || !id_inmobiliaria) {
+            return res.status(400).json({ error: "Faltan datos obligatorios" });
+        }
+
+        // Verificar si existe la inmobiliaria
+        const checkInmo = await pool.query(
+            "SELECT id FROM inmobiliarias WHERE id = $1",
+            [id_inmobiliaria]
+        );
+        if (checkInmo.rows.length === 0) {
+            return res.status(400).json({ error: "La inmobiliaria seleccionada no existe" });
+        }
+
+        // Validar email duplicado
+        const checkEmail = await pool.query(
+            "SELECT id FROM usuarios WHERE email = $1 AND id <> $2",
+            [email, id]
+        );
+        if (checkEmail.rows.length > 0) {
+            return res.status(400).json({ error: "El email ya está en uso por otro usuario" });
+        }
+
+        // Actualizar usuario
+        const result = await pool.query(
+            `
+            UPDATE usuarios
+            SET nombre = $1,
+                email = $2,
+                rol = $3,
+                id_inmobiliaria = $4
+            WHERE id = $5
+            RETURNING id, nombre, email, rol, id_inmobiliaria, activo
+            `,
+            [nombre, email, rol, id_inmobiliaria, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+        res.json({
+            msg: "Usuario actualizado correctamente",
+            usuario: result.rows[0]
+        });
+
+    } catch (err) {
+        console.error("Error actualizando usuario:", err);
+        res.status(500).json({ error: "Error actualizando usuario" });
+    }
+};
+
+
+export const toggleUsuario = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `
+            UPDATE usuarios
+            SET activo = NOT activo
+            WHERE id = $1
+            RETURNING id, nombre, email, rol, id_inmobiliaria, activo
+            `,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+        res.json({
+            msg: `Usuario ${result.rows[0].activo ? "activado" : "suspendido"} correctamente`,
+            usuario: result.rows[0]
+        });
+
+    } catch (err) {
+        console.error("Error suspendiendo usuario:", err);
+        res.status(500).json({ error: "Error interno" });
     }
 };
