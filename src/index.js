@@ -15,6 +15,12 @@ const allowed = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : ["http:/
 app.use(cors({ origin: allowed, credentials: true }));
 app.use(express.json());
 
+app.use(cors({
+    origin: "*",
+    methods: "GET,POST,PUT,PATCH,DELETE",
+    allowedHeaders: "Content-Type, Authorization",
+}));
+
 app.get("/", (req, res) => res.json({ ok: true, name: "inquilino-check-api" }));
 
 app.use("/auth", authRoutes);
