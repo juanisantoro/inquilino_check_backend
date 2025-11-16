@@ -9,6 +9,7 @@ import inquilinosRoutes from "./routes/inquilinos.js";
 import evaluacionesRoutes from "./routes/evaluaciones.js";
 import adminRoutes from "./routes/admin.js";
 import usuariosRoutes from "./routes/usuarios.js"; // ajustá el path
+import statsRoutes from "./routes/dashboard.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ const app = express();
 const allowed = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : ["http://localhost:3000"];
 app.use(cors({ origin: allowed, credentials: true }));
 app.use(express.json());
+
 
 app.use(cors({
     origin: "*",
@@ -31,6 +33,7 @@ app.use("/evaluaciones", evaluacionesRoutes);
 app.use("/admin", adminRoutes);
 // Montás el router de usuarios
 app.use("/usuarios", usuariosRoutes);
+app.use("/estadisticas", statsRoutes);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`✅ Backend corriendo en puerto ${port}`));

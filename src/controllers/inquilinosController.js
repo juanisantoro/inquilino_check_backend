@@ -17,6 +17,20 @@ export const crearInquilino = async (req, res) => {
   }
 };
 
+
+export const listarTodos= async (req, res)=>{
+  try {
+
+    const q = await pool.query(
+      `select * from inquilinos`,
+      
+    );
+    res.json(q.rows);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error al listar" });
+  }
+}
 export const listarInquilinos = async (req, res) => {
   try {
     const id_inmobiliaria = req.user.inmobiliariaId;
